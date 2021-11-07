@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "outDir": "./build/",
+    "outDir": "lib",
     "importHelpers": true,
     "lib": ["ESNext"],
     "target": "ES2021",

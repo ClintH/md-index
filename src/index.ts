@@ -1,6 +1,7 @@
-
+#!/usr/bin/env node
 import {mapTag,makePage, lintTags, TagLinting} from './tags.js';
 import {gather} from './walk.js';
+import { fileURLToPath } from 'url';
 import {MultiMap, sortByAlpha,sortBySize} from './MultiMap.js';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -8,6 +9,19 @@ import * as path from 'path';
 import {LintError} from './lint.js';
 import {FrontMatterLinting, lintFrontMatter} from './frontmatter.js';
 
+let v = '?';
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const pkgPath = path.join(__dirname, '../package.json');
+if (fs.existsSync(pkgPath)) {
+  try {
+    const pkg = JSON.parse(fs.readFileSync(pkgPath).toString('utf8'));
+    if (pkg.version) v = pkg.version;
+  } catch (e) { }
+}
+
+const header = `md-index (v${v})`;
+console.log(header);
+console.log('-'.repeat(header.length));
 
 interface Config {
   frontMatter:FrontMatterLinting
@@ -16,7 +30,7 @@ interface Config {
 
 if (process.argv.length != 3) {
   console.log('Error: Expected base path for Markdown folder to be given.');
-  console.log('eg: node md-index "c:\\my folder\\"');
+  console.log('   eg: node md-index "c:\\my folder\\"');
   process.exit(1);
 }
 
@@ -27,11 +41,11 @@ if (!fs.existsSync(basePath)) {
 }
 
 let config:Config|undefined = undefined;
-if (fs.existsSync('config.json')) {
+if (fs.existsSync('md-index.json')) {
   try {
     config = JSON.parse(fs.readFileSync('md-index.json').toString('utf8')) as Config;
   } catch (e) {
-    console.log('Error reading config.json: ' + e);
+    console.log('Error reading md-index.json: ' + e);
     process.exit(1);
   }
 }

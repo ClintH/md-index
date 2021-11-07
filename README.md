@@ -4,7 +4,13 @@ Markdown text file linter and tag aggregator. Just developed for my own needs.
 
 # Install
 
+Assuming Nodejs is installed:
+
 `npm install -g @clinth/md-index`
+
+To update
+
+`npm update -g @clinth/md-index`
 
 # Usage
 

@@ -1,26 +1,31 @@
 {
   "name": "@clinth/md-index",
-  "version": "1.0.0",
+  "version": "1.0.10",
   "description": "",
   "bin": {
-    "md-index": "./build/index.js"
+    "md-index": "./lib/index.js"
   },
   "type": "module",
-  "main": "./build/index.js",
+  "main": "./lib/index.js",
   "scripts": {
-    "build": "npx tsc",
-    "develop": "npx tsc && node -r source-map-support/register .\\build\\index.js"
+    "build": "npm run clean && npx tsc",
+    "develop": "npx tsc && node -r source-map-support/register .\\lib\\index.js",
+    "clean": "rimraf lib",
+    "push": "npm run build && npm publish"
   },
   "keywords": [],
+  "homepage": "https://github.com/clinth/md-index/",
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "gray-matter": "^4.0.3",
+    "gray-matter": "^4.0.3"
+  },
+  "files": ["md-index.json", "lib/**/*"],
+  "devDependencies": {
+    "@types/node": "^16.11.6",
+    "rimraf": "^3.0.2",
     "source-map-support": "^0.5.20",
     "tslib": "^2.3.1",
     "typescript": "^4.6.0-dev.20211105"
-  },
-  "devDependencies": {
-    "@types/node": "^16.11.6"
   }
 }

@@ -1,0 +1,10 @@
+{
+  "tags": {
+    "spaces": true,
+    "lowerCase": true,
+    "camelHyphen": true
+  },
+  "frontMatter": {
+    "forbiddenKeys": ["keywords"]
+  }
+}
