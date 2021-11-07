@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "outDir": "./build/",
+    "importHelpers": true,
+    "lib": ["ESNext"],
+    "target": "ES2021",
+    "rootDir": "src",
+    "sourceMap": true,
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,      
+    "strict": true,
+    "useUnknownInCatchVariables": true,        
+    "skipLibCheck": true,     
+    "resolveJsonModule": true 
+  },
+  "include": [
+    "src/**/*"
+  ]
+}
