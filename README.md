@@ -62,6 +62,10 @@ Install dependencies:
 
 `npm install`
 
+Build (does a clean beforehand):
+
+`npm run build`
+
 To compile TS and run with a given base path:
 
 `npm run develop [path]`

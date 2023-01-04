@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-import {mapTag,makePage, lintTags, TagLinting} from './tags.js';
+import {mapTag, makePage, lintTags, TagLinting, makeTagHouseKeepingPage} from './tags.js';
 import {gather} from './walk.js';
-import { fileURLToPath } from 'url';
-import {MultiMap, sortByAlpha,sortBySize} from './MultiMap.js';
+import {fileURLToPath} from 'url';
+import {MultiMap, sortByAlpha, sortBySize} from './MultiMap.js';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -16,7 +16,7 @@ if (fs.existsSync(pkgPath)) {
   try {
     const pkg = JSON.parse(fs.readFileSync(pkgPath).toString('utf8'));
     if (pkg.version) v = pkg.version;
-  } catch (e) { }
+  } catch (e) {}
 }
 
 const header = `md-index (v${v})`;
@@ -24,8 +24,8 @@ console.log(header);
 console.log('-'.repeat(header.length));
 
 interface Config {
-  frontMatter:FrontMatterLinting
-  tags:TagLinting
+  frontMatter: FrontMatterLinting
+  tags: TagLinting
 }
 
 if (process.argv.length != 3) {
@@ -40,7 +40,7 @@ if (!fs.existsSync(basePath)) {
   process.exit(1);
 }
 
-let config:Config|undefined = undefined;
+let config: Config | undefined = undefined;
 if (fs.existsSync('md-index.json')) {
   try {
     config = JSON.parse(fs.readFileSync('md-index.json').toString('utf8')) as Config;
@@ -51,8 +51,8 @@ if (fs.existsSync('md-index.json')) {
 }
 
 if (config == undefined) config = {
-  tags: {spaces:true, lowerCase:true, camelHyphen:true},
-  frontMatter: {forbiddenKeys:['keywords']}
+  tags: {spaces: true, lowerCase: true, camelHyphen: true},
+  frontMatter: {forbiddenKeys: ['keywords']}
 }
 
 const errors = new MultiMap<LintError>();
@@ -61,25 +61,25 @@ console.log('Processing: ' + basePath);
 const result = await gather(basePath);
 if (result.errors.length) {
   for (const e of result.errors) {
-    errors.set(e.path, {msg:`Parsing error: ${e.msg}`, lint: 'parse'});
+    errors.set(e.path, {msg: `Parsing error: ${e.msg}`, lint: 'parse'});
   }
 }
 
 errors.merge(lintFrontMatter(result.parsed, config.frontMatter));
 
-const [tags,tagWarnings] = mapTag(result.parsed, config.tags);
+const [tags, tagWarnings] = mapTag(result.parsed, config.tags);
 errors.merge(tagWarnings);
 
 const tagLintResults = lintTags(tags, config.tags);
 
-function listWithTag(tag:string):string {
+function listWithTag(tag: string): string {
   const results = tags.get(tag);
   if (results === undefined) return '';
-  const files = results.map(r=>r.path);
+  const files = results.map(r => r.path);
   return files.join(', ');
 }
 
-function showTagErrors(tagErrors:MultiMap<LintError>) {
+function showTagErrors(tagErrors: MultiMap<LintError>) {
   if (tagErrors.isEmpty()) return;
   console.log('Tag Errors');
   const tags = tagErrors.keys();
@@ -95,7 +95,7 @@ function showTagErrors(tagErrors:MultiMap<LintError>) {
   console.log();
 }
 
-function showErrors(errors:MultiMap<LintError>) {
+function showErrors(errors: MultiMap<LintError>) {
   if (errors.isEmpty()) return;
 
   console.log('Errors');
@@ -110,13 +110,25 @@ function showErrors(errors:MultiMap<LintError>) {
   }
 }
 
+
+const writeFile = (filename: string, content: string) => {
+  fs.writeFileSync(path.join(basePath, filename), content);
+}
+
 showErrors(errors);
 showTagErrors(tagLintResults);
 
+writeFile('tags-alpha.md', makePage(tags, sortByAlpha, {
+  title: `Tags by alphabetical order`,
+  subSortField: `title`
+}));
 
+writeFile('tags-freq.md', makePage(tags, sortBySize, {
+  title: `Tags by frequency of usage`,
+  subSortField: `title
+`}));
 
-fs.writeFileSync(path.join(basePath,'tags-alpha.md'), makePage(tags, sortByAlpha));
-fs.writeFileSync(path.join(basePath,'tags-freq.md'), makePage(tags, sortBySize));
+writeFile('tags-housekeeping.md', makeTagHouseKeepingPage(tags));
 
 console.log('Done.');
 /*
